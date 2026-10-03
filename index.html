@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GS7 – Thì quá khứ đơn theo level</title>
+<style>
+  :root{
+    --bg:#f7f8fb; --card:#ffffff; --ink:#1f2430; --sub:#5b6270; --line:#e4e6ec;
+    --brand:#3d5af1; --brand-ink:#ffffff;
+    --good:#1c8a5a; --good-bg:#e8f7ef; --bad:#c53d43; --bad-bg:#fdecec;
+    --chip:#eef1fb; --chip-ink:#334; --radius:14px;
+    --l1:#2f9e6e; --l2:#3d7bf1; --l3:#8a4fd6; --l4:#e07a1f; --l5:#c53d43;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.55;padding:32px 16px 80px;}
+  .wrap{max-width:780px;margin:0 auto;}
+  header{margin-bottom:22px;}
+  h1{font-size:1.6rem;margin:0 0 6px;}
+  header p{color:var(--sub);margin:0;font-size:0.95rem;}
+  .levels{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+  .levels span{font-size:0.78rem;font-weight:700;padding:4px 10px;border-radius:99px;color:#fff;}
+  .progress-bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:16px;}
+  .progress-fill{height:100%;background:var(--brand);width:0%;transition:width .3s ease;}
+  .progress-label{font-size:0.82rem;color:var(--sub);margin-top:6px;}
+  .stu-info{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 20px;margin-top:18px;display:flex;flex-wrap:wrap;gap:12px 20px;}
+  .stu-info label{font-size:0.85rem;color:var(--sub);display:flex;flex-direction:column;gap:4px;flex:1 1 160px;}
+  .stu-info input{border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;font-size:0.92rem;
+    font-family:inherit;color:var(--ink);outline:none;}
+  .stu-info input:focus{border-color:var(--brand);}
+  .stu-info input.required-missing{border-color:var(--bad);}
+
+  /* Theory */
+  details.theory{background:#fffdf5;border:1.5px solid #f0e2b6;border-radius:var(--radius);padding:4px 20px;margin-bottom:22px;}
+  details.theory summary{cursor:pointer;font-weight:700;padding:12px 0;font-size:1.02rem;}
+  .theory h3{font-size:0.98rem;margin:16px 0 6px;color:#7a5a00;}
+  .theory table{width:100%;border-collapse:collapse;font-size:0.9rem;margin-bottom:6px;}
+  .theory th,.theory td{border:1px solid #eadfbf;padding:6px 8px;text-align:left;vertical-align:top;}
+  .theory th{background:#fbf3d9;}
+  .theory .irr{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 12px;font-size:0.9rem;}
+  .theory .irr b{color:#7a5a00;}
+  .theory p{margin:4px 0;font-size:0.92rem;}
+
+  section.section{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--lv,var(--brand));
+    border-radius:var(--radius);padding:22px 22px 24px;margin-bottom:22px;}
+  section.section h2{font-size:1.08rem;margin:0 0 4px;}
+  section.section .desc{color:var(--sub);font-size:0.9rem;margin:0 0 14px;}
+  .tag{display:inline-block;font-size:0.72rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+    color:#fff;background:var(--lv,var(--brand));padding:3px 9px;border-radius:99px;margin-bottom:8px;}
+  .tip{background:#f3f5ff;border-radius:10px;padding:8px 12px;font-size:0.88rem;color:#334;margin-bottom:12px;}
+  .q{border-top:1px solid var(--line);padding:14px 0;}
+  .q:first-of-type{border-top:none;padding-top:4px;}
+  .qtext{font-size:0.98rem;margin-bottom:8px;}
+  .qnum{font-weight:700;color:var(--lv,var(--brand));margin-right:4px;}
+  input.blank{border:none;border-bottom:2px solid var(--brand);background:transparent;font-size:0.98rem;
+    font-family:inherit;padding:2px 4px;width:150px;color:var(--ink);outline:none;}
+  .mc-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:4px;}
+  .mc-options.long{grid-template-columns:1fr 1fr;}
+  .mc-btn{border:1.5px solid var(--line);background:var(--card);color:var(--ink);padding:8px 10px;border-radius:10px;
+    font-size:0.92rem;cursor:pointer;transition:all .15s ease;text-align:center;font-family:inherit;}
+  .mc-options.long .mc-btn{text-align:left;}
+  .mc-btn:hover{border-color:var(--brand);}
+  .mc-btn.selected{border-color:var(--brand);background:#eef1ff;font-weight:600;}
+  .mc-btn.correct{border-color:var(--good);background:var(--good-bg);color:var(--good);font-weight:600;}
+  .mc-btn.incorrect{border-color:var(--bad);background:var(--bad-bg);color:var(--bad);font-weight:600;}
+  .order-pool{display:flex;flex-wrap:wrap;gap:8px;min-height:20px;margin-bottom:10px;}
+  .order-answer{min-height:44px;border:1.5px dashed var(--line);border-radius:10px;padding:8px;display:flex;
+    flex-wrap:wrap;gap:8px;margin-bottom:10px;background:#fbfbfd;}
+  .chip{background:var(--chip);color:var(--chip-ink);border:1px solid var(--line);padding:7px 12px;border-radius:8px;
+    font-size:0.9rem;cursor:pointer;user-select:none;}
+  .chip:hover{border-color:var(--brand);}
+  .order-answer .chip{background:#eef1ff;border-color:var(--brand);}
+  .feedback{margin-top:8px;font-size:0.88rem;padding:8px 12px;border-radius:8px;display:none;}
+  .feedback.show{display:block;}
+  .feedback.good{background:var(--good-bg);color:var(--good);}
+  .feedback.bad{background:var(--bad-bg);color:var(--bad);}
+  .feedback .why{display:block;color:#444;font-weight:400;margin-top:2px;}
+  .btn-row{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap;}
+  button.primary{background:var(--brand);color:var(--brand-ink);border:none;padding:12px 22px;border-radius:10px;
+    font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit;}
+  button.primary:hover{background:#2c46d6;}
+  button.primary:disabled{opacity:.6;cursor:not-allowed;}
+  button.secondary{background:var(--card);color:var(--ink);border:1.5px solid var(--line);padding:12px 22px;
+    border-radius:10px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit;}
+  button.secondary:hover{border-color:var(--brand);}
+  #score-panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;
+    text-align:center;display:none;margin-top:22px;}
+  #score-panel.show{display:block;}
+  #score-panel .big{font-size:2.2rem;font-weight:700;color:var(--brand);margin:6px 0;}
+  #score-panel .msg{color:var(--sub);font-size:0.95rem;}
+  #level-breakdown{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:12px;}
+  #level-breakdown span{font-size:0.82rem;padding:4px 10px;border-radius:99px;color:#fff;font-weight:600;}
+  #send-status{margin-top:10px;font-size:0.85rem;font-weight:600;}
+  #send-status.ok{color:var(--good);} #send-status.pending{color:var(--sub);} #send-status.err{color:var(--bad);}
+  .teacher{margin-top:40px;text-align:center;}
+  .teacher button{background:none;border:none;color:#9aa0ab;font-size:0.8rem;cursor:pointer;text-decoration:underline;}
+  #answer-key{display:none;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 22px;margin-top:12px;text-align:left;font-size:0.9rem;}
+  #answer-key h4{margin:12px 0 4px;}
+  #answer-key ol{margin:0;padding-left:22px;}
+  @media (max-width:560px){
+    .mc-options{grid-template-columns:1fr 1fr;}
+    .mc-options.long{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Thì Quá Khứ Đơn – Luyện theo level</h1>
+    <p>GS7 · Unit 3 Community Service · 50 câu · Làm lần lượt từ Level 1 đến Level 5.</p>
+    <div class="levels">
+      <span style="background:var(--l1)">L1 Dấu hiệu</span>
+      <span style="background:var(--l2)">L2 Thêm -ed</span>
+      <span style="background:var(--l3)">L3 Bất quy tắc</span>
+      <span style="background:var(--l4)">L4 Chia theo loại câu</span>
+      <span style="background:var(--l5)">L5 Tổng hợp</span>
+    </div>
+    <div class="stu-info">
+      <label>Trường <input type="text" id="stuSchool" placeholder="Tên trường"></label>
+      <label>Lớp <input type="text" id="stuClass" placeholder="VD: 7A1"></label>
+      <label>Họ và tên <input type="text" id="stuName" placeholder="Họ và tên học sinh"></label>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-label" id="progress-label">Đã trả lời: 0/50</div>
+  </header>
+
+  <details class="theory" open>
+    <summary>📘 Ôn lý thuyết trước khi làm (bấm để thu gọn)</summary>
+    <h3>1. Dấu hiệu nhận biết</h3>
+    <p><b>yesterday</b> · <b>last</b> + night / week / month / year / Sunday / summer · khoảng thời gian + <b>ago</b> (two days ago) · <b>in</b> + năm đã qua (in 2020)</p>
+    <p>⚠️ <i>every day, usually, often, now, tomorrow, next week</i> → KHÔNG phải quá khứ đơn.</p>
+    <h3>2. Công thức</h3>
+    <table>
+      <tr><th>Loại câu</th><th>Công thức</th><th>Ví dụ</th></tr>
+      <tr><td>Khẳng định (+)</td><td>S + <b>V-ed / V2</b></td><td>We <b>helped</b> old people. · They <b>taught</b> English.</td></tr>
+      <tr><td>Phủ định (–)</td><td>S + <b>didn't</b> + <b>V</b> (nguyên mẫu)</td><td>We <b>didn't donate</b> money.</td></tr>
+      <tr><td>Nghi vấn (?)</td><td><b>Did</b> + S + <b>V</b> (nguyên mẫu)?<br>→ Yes, S did. / No, S didn't.</td><td><b>Did</b> they <b>clean</b> the street?</td></tr>
+      <tr><td>Câu hỏi Wh-</td><td>Wh- + <b>did</b> + S + <b>V</b>?</td><td>What <b>did</b> you <b>do</b> yesterday?</td></tr>
+    </table>
+    <p>⭐ Đã có <b>did / didn't</b> thì động từ phía sau trở về <b>nguyên mẫu</b> (didn't <s>went</s> → didn't <b>go</b>).</p>
+    <h3>3. Quy tắc thêm -ed</h3>
+    <table>
+      <tr><th>Trường hợp</th><th>Cách thêm</th><th>Ví dụ</th></tr>
+      <tr><td>Thông thường</td><td>+ ed</td><td>help → helped, clean → cleaned</td></tr>
+      <tr><td>Tận cùng <b>-e</b></td><td>+ d</td><td>donate → donated, live → lived</td></tr>
+      <tr><td>Phụ âm + <b>y</b></td><td>bỏ y → + ied</td><td>study → studied, carry → carried</td></tr>
+      <tr><td>Nguyên âm + <b>y</b></td><td>+ ed (giữ y)</td><td>play → played, enjoy → enjoyed</td></tr>
+      <tr><td>1 âm tiết, tận cùng phụ âm–nguyên âm–phụ âm</td><td>gấp đôi phụ âm cuối + ed</td><td>stop → stopped, plan → planned</td></tr>
+    </table>
+    <h3>4. Động từ bất quy tắc hay gặp (V → V2)</h3>
+    <div class="irr">
+      <span>go → <b>went</b></span><span>have → <b>had</b></span><span>do → <b>did</b></span><span>make → <b>made</b></span>
+      <span>give → <b>gave</b></span><span>teach → <b>taught</b></span><span>send → <b>sent</b></span><span>buy → <b>bought</b></span>
+      <span>eat → <b>ate</b></span><span>see → <b>saw</b></span><span>take → <b>took</b></span><span>get → <b>got</b></span>
+      <span>come → <b>came</b></span><span>write → <b>wrote</b></span><span>read → <b>read</b></span><span>drink → <b>drank</b></span>
+      <span>swim → <b>swam</b></span><span>sing → <b>sang</b></span><span>be → <b>was / were</b></span><span>grow → <b>grew</b></span>
+    </div>
+  </details>
+
+  <div id="sections"></div>
+
+  <div class="btn-row">
+    <button class="primary" id="check-all-btn">Nộp bài &amp; Kiểm tra toàn bộ</button>
+    <button class="secondary" id="reset-btn">Làm lại từ đầu</button>
+  </div>
+  <div id="score-panel">
+    <div class="msg">Kết quả của bạn</div>
+    <div class="big" id="score-big">0/50</div>
+    <div class="msg" id="score-ten"></div>
+    <div class="msg" id="score-msg"></div>
+    <div id="level-breakdown"></div>
+    <div id="send-status"></div>
+  </div>
+
+  <div class="teacher">
+    <button type="button" id="key-btn">Dành cho giáo viên</button>
+    <div id="answer-key"></div>
+  </div>
+</div>
+
+<script>
+// ---------- CONFIG (shared infra) ----------
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby08od-VjK63bcLdiXGBgjz9imiBImjbBBKmjHqN1AnzfpBhEjFyItSniMfbPKm9TA/exec";
+const CLASS_LABEL = "GS7";
+const TEST_NAME = "Thì quá khứ đơn theo level (50 câu)";
+const TEACHER_CODE = "gs7gv";
+
+// ---------- DATA ----------
+const SECTIONS = [
+  {
+    key:"l1", color:"var(--l1)", tag:"Level 1 · Nhận biết", title:"Nhận biết dấu hiệu thì quá khứ đơn", type:"mc",
+    desc:"Chọn đáp án đúng. Hãy tìm dấu hiệu thời gian trong câu.",
+    tip:"Mẹo: thấy <b>yesterday, last…, …ago, in + năm đã qua</b> → dùng quá khứ đơn.",
+    items:[
+      {prompt:"We cleaned the school yard ___.", options:["every day","last Sunday","tomorrow","now"], answer:"last Sunday", why:"\"cleaned\" là quá khứ → đi với \"last Sunday\"."},
+      {prompt:"My class visited the nursing home two days ___.", options:["ago","last","yesterday","before"], answer:"ago", why:"Khoảng thời gian + ago: two days ago (2 ngày trước)."},
+      {prompt:"Từ nào là dấu hiệu của thì quá khứ đơn?", options:["next week","yesterday","at the moment","every morning"], answer:"yesterday", why:"yesterday = hôm qua → quá khứ đơn."},
+      {prompt:"They planted trees ___ 2020.", options:["in","at","on","last"], answer:"in", why:"in + năm đã qua (in 2020)."},
+      {prompt:"Câu nào dùng thì quá khứ đơn?", long:true, options:["She often helps old people.","She helped old people last week.","She is helping old people now.","She will help old people."], answer:"She helped old people last week.", why:"Có \"last week\" và động từ \"helped\" (V-ed)."},
+      {prompt:"Tom ___ to teach English last summer.", options:["volunteers","volunteered","is volunteering","will volunteer"], answer:"volunteered", why:"last summer → quá khứ đơn: volunteered."},
+      {prompt:"Từ nào KHÔNG phải dấu hiệu của thì quá khứ đơn?", options:["last month","three days ago","usually","in 2019"], answer:"usually", why:"usually (thường xuyên) là dấu hiệu thì hiện tại đơn."},
+      {prompt:"___ week, we collected old clothes for poor children.", options:["Next","Last","Every","This"], answer:"Last", why:"\"collected\" là quá khứ → Last week."},
+      {prompt:"I ___ my grandparents last weekend.", options:["visit","visits","visited","visiting"], answer:"visited", why:"last weekend → V-ed: visited."},
+      {prompt:"Mai ___ a postcard yesterday.", options:["makes","made","make","is making"], answer:"made", why:"yesterday → quá khứ; make → made (bất quy tắc)."}
+    ]
+  },
+  {
+    key:"l2", color:"var(--l2)", tag:"Level 2 · Có quy tắc", title:"Viết dạng V-ed của động từ có quy tắc", type:"fill",
+    desc:"Gõ dạng quá khứ (V-ed) của động từ. Xem lại bảng quy tắc thêm -ed ở trên nếu chưa chắc.",
+    tip:"Nhớ 5 quy tắc: + ed · -e → + d · phụ âm + y → ied · nguyên âm + y → yed · gấp đôi phụ âm cuối.",
+    items:[
+      {before:"help (giúp đỡ) →", after:"", answers:["helped"], why:"Thông thường: + ed."},
+      {before:"clean (lau dọn) →", after:"", answers:["cleaned"], why:"Thông thường: + ed."},
+      {before:"donate (quyên góp) →", after:"", answers:["donated"], why:"Tận cùng -e: chỉ thêm d."},
+      {before:"live (sống) →", after:"", answers:["lived"], why:"Tận cùng -e: chỉ thêm d."},
+      {before:"study (học) →", after:"", answers:["studied"], why:"Phụ âm (d) + y → bỏ y, thêm ied."},
+      {before:"carry (mang, vác) →", after:"", answers:["carried"], why:"Phụ âm (r) + y → bỏ y, thêm ied."},
+      {before:"play (chơi) →", after:"", answers:["played"], why:"Nguyên âm (a) + y → giữ y, thêm ed."},
+      {before:"stop (dừng lại) →", after:"", answers:["stopped"], why:"stop: phụ âm–nguyên âm–phụ âm → gấp đôi p: stopped."},
+      {before:"plan (lên kế hoạch) →", after:"", answers:["planned"], why:"plan: gấp đôi n: planned."},
+      {before:"recycle (tái chế) →", after:"", answers:["recycled"], why:"Tận cùng -e: chỉ thêm d."}
+    ]
+  },
+  {
+    key:"l3", color:"var(--l3)", tag:"Level 3 · Bất quy tắc", title:"Viết dạng quá khứ (V2) của động từ bất quy tắc", type:"fill",
+    desc:"Những động từ này KHÔNG thêm -ed. Gõ dạng quá khứ đúng.",
+    tip:"Học thuộc theo cặp: go – went, have – had, do – did…",
+    items:[
+      {before:"go (đi) →", after:"", answers:["went"], why:"go → went"},
+      {before:"have (có, ăn) →", after:"", answers:["had"], why:"have → had"},
+      {before:"do (làm) →", after:"", answers:["did"], why:"do → did"},
+      {before:"make (làm ra) →", after:"", answers:["made"], why:"make → made"},
+      {before:"give (cho, tặng) →", after:"", answers:["gave"], why:"give → gave"},
+      {before:"teach (dạy) →", after:"", answers:["taught"], why:"teach → taught"},
+      {before:"send (gửi) →", after:"", answers:["sent"], why:"send → sent"},
+      {before:"buy (mua) →", after:"", answers:["bought"], why:"buy → bought"},
+      {before:"eat (ăn) →", after:"", answers:["ate"], why:"eat → ate"},
+      {before:"see (nhìn thấy) →", after:"", answers:["saw"], why:"see → saw"}
+    ]
+  },
+  {
+    key:"l4a", color:"var(--l4)", tag:"Level 4A · Khẳng định & Phủ định", title:"Chia động từ trong câu khẳng định và phủ định", type:"fill",
+    desc:"Chia động từ trong ngoặc ở thì quá khứ đơn. Câu phủ định có thể viết didn't hoặc did not.",
+    tip:"(+) S + V-ed/V2 · (–) S + didn't + V nguyên mẫu",
+    items:[
+      {before:"We", after:"(pick up) litter in the park last Sunday.", answers:["picked up"], why:"(+) pick up → picked up."},
+      {before:"My brother", after:"(go) to the music club yesterday.", answers:["went"], why:"(+) go → went (bất quy tắc)."},
+      {before:"The students", after:"(water) the plants after school yesterday.", answers:["watered"], why:"(+) water → watered."},
+      {before:"Last year, they", after:"(send) books to children in rural areas.", answers:["sent"], why:"(+) send → sent (bất quy tắc)."},
+      {before:"I", after:"(not watch) TV last night.", answers:["didn't watch","did not watch"], why:"(–) didn't + V nguyên mẫu: didn't watch."},
+      {before:"She", after:"(not go) camping last weekend.", answers:["didn't go","did not go"], why:"(–) didn't go — KHÔNG viết didn't went."},
+      {before:"My class", after:"(not donate) money last month.", answers:["didn't donate","did not donate"], why:"(–) didn't donate."},
+      {before:"Tom", after:"(not have) breakfast yesterday morning.", answers:["didn't have","did not have"], why:"(–) didn't have — KHÔNG viết didn't had."}
+    ]
+  },
+  {
+    key:"l4b", color:"var(--l4)", tag:"Level 4B · Nghi vấn", title:"Câu hỏi với Did", type:"mc",
+    desc:"Chọn đáp án đúng để hoàn thành câu hỏi / câu trả lời.",
+    tip:"(?) Did + S + V nguyên mẫu? → Yes, S did. / No, S didn't.",
+    items:[
+      {prompt:"___ you visit the nursing home last Saturday?", options:["Do","Does","Did","Were"], answer:"Did", why:"last Saturday → câu hỏi quá khứ bắt đầu bằng Did."},
+      {prompt:"Did your club ___ trees last spring?", options:["plant","planted","plants","planting"], answer:"plant", why:"Sau Did dùng V nguyên mẫu: plant."},
+      {prompt:"What ___ you do last weekend?", options:["do","does","did","were"], answer:"did", why:"Wh- + did + S + V: What did you do…?"},
+      {prompt:"Did Lan make postcards? – Yes, she ___.", options:["did","does","made","do"], answer:"did", why:"Trả lời ngắn: Yes, she did."}
+    ]
+  },
+  {
+    key:"l5a", color:"var(--l5)", tag:"Level 5A · Tổng hợp", title:"Chọn câu / đáp án đúng", type:"mc",
+    desc:"Vận dụng tất cả kiến thức: dấu hiệu, V-ed, bất quy tắc, did/didn't.",
+    tip:"Kiểm tra: có did/didn't chưa? Nếu có → động từ nguyên mẫu.",
+    items:[
+      {prompt:"Chọn câu ĐÚNG:", long:true, options:["They didn't went to school yesterday.","They didn't go to school yesterday.","They don't go to school yesterday.","They not went to school yesterday."], answer:"They didn't go to school yesterday.", why:"Phủ định quá khứ: didn't + V nguyên mẫu (go)."},
+      {prompt:"Chọn câu ĐÚNG:", long:true, options:["Did she taught English last summer?","Does she teach English last summer?","Did she teach English last summer?","Did she teaches English last summer?"], answer:"Did she teach English last summer?", why:"Did + S + V nguyên mẫu (teach)."},
+      {prompt:"Last Sunday, we ___ to the park, ___ litter and ___ trees.", long:true, options:["go – pick up – plant","went – picked up – planted","went – pick up – plant","goes – picks up – plants"], answer:"went – picked up – planted", why:"Chuỗi hành động trong quá khứ → tất cả đều chia quá khứ."},
+      {prompt:"My friends ___ old clothes last winter, but they ___ any money.", long:true, options:["collected – didn't donate","collect – don't donate","collected – didn't donated","collects – didn't donate"], answer:"collected – didn't donate", why:"(+) collected; (–) didn't + donate (nguyên mẫu)."}
+    ]
+  },
+  {
+    key:"l5b", color:"var(--l5)", tag:"Level 5B · Tổng hợp", title:"Sắp xếp thành câu đúng", type:"order",
+    desc:"Bấm vào các từ theo đúng thứ tự. Bấm vào từ đã chọn để bỏ ra.",
+    tip:"Trật tự: (Trạng từ thời gian) + Chủ ngữ + Động từ + Tân ngữ + (Trạng từ thời gian).",
+    items:[
+      {words:["We","helped","elderly people","last Sunday"], answers:["We helped elderly people last Sunday","Last Sunday we helped elderly people"], end:".", why:"S + V-ed + O + thời gian."},
+      {words:["She","didn't","go","to school","yesterday"], answers:["She didn't go to school yesterday","Yesterday she didn't go to school"], end:".", why:"S + didn't + V + … + thời gian."},
+      {words:["Did","you","visit","your grandparents","last week"], answers:["Did you visit your grandparents last week"], end:"?", why:"Did + S + V + O + thời gian?"},
+      {words:["My class","made","postcards","two weeks ago"], answers:["My class made postcards two weeks ago"], end:".", why:"S + V2 + O + thời gian."}
+    ]
+  }
+];
+
+// ---------- HELPERS ----------
+function norm(s){
+  return (s||"").toLowerCase().replace(/[’‘`]/g,"'").replace(/[.?!,]/g," ").replace(/\s+/g," ").trim();
+}
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+const state = {};
+SECTIONS.forEach(s => state[s.key] = Array(s.items.length).fill(null));
+const TOTAL = SECTIONS.reduce((n,s)=>n+s.items.length,0);
+function totalAnswered(){
+  let n=0; Object.values(state).forEach(a=>a.forEach(v=>{ if(v!==null && v!=="") n++; })); return n;
+}
+function updateProgress(){
+  const a = totalAnswered();
+  document.getElementById('progress-fill').style.width = (a/TOTAL*100)+'%';
+  document.getElementById('progress-label').textContent = `Đã trả lời: ${a}/${TOTAL}`;
+}
+
+// ---------- RENDER ----------
+let globalNum = 0;
+const root = document.getElementById('sections');
+SECTIONS.forEach(sec => {
+  const el = document.createElement('section');
+  el.className = 'section';
+  el.style.setProperty('--lv', sec.color);
+  el.innerHTML = `<span class="tag">${sec.tag}</span><h2>${sec.title}</h2><p class="desc">${sec.desc}</p>` +
+                 (sec.tip ? `<div class="tip">${sec.tip}</div>` : '') + `<div class="qs" id="${sec.key}-questions"></div>`;
+  root.appendChild(el);
+  const box = el.querySelector('.qs');
+  sec.items.forEach((item,i) => {
+    globalNum++;
+    item._num = globalNum;
+    const q = document.createElement('div');
+    q.className = 'q';
+    const fb = document.createElement('div');
+    fb.className = 'feedback'; fb.id = `${sec.key}-fb-${i}`;
+    if(sec.type === 'mc'){
+      q.innerHTML = `<div class="qtext"><span class="qnum">${globalNum}.</span></div>`;
+      q.querySelector('.qtext').appendChild(document.createTextNode(item.prompt));
+      const wrap = document.createElement('div');
+      wrap.className = 'mc-options' + (item.long ? ' long' : '');
+      item.options.forEach(opt => {
+        const b = document.createElement('button');
+        b.type='button'; b.className='mc-btn'; b.textContent=opt;
+        b.addEventListener('click', () => {
+          wrap.querySelectorAll('.mc-btn').forEach(x=>x.classList.remove('selected'));
+          b.classList.add('selected'); state[sec.key][i]=opt; updateProgress();
+        });
+        wrap.appendChild(b);
+      });
+      q.appendChild(wrap);
+    } else if(sec.type === 'fill'){
+      const t = document.createElement('div');
+      t.className='qtext';
+      t.innerHTML = `<span class="qnum">${globalNum}.</span> `;
+      t.appendChild(document.createTextNode(item.before + ' '));
+      const inp = document.createElement('input');
+      inp.type='text'; inp.className='blank'; inp.autocomplete='off'; inp.spellcheck=false;
+      inp.dataset.idx = i;
+      inp.addEventListener('input', ()=>{ state[sec.key][i]=inp.value.trim(); updateProgress(); });
+      t.appendChild(inp);
+      if(item.after) t.appendChild(document.createTextNode(' ' + item.after));
+      q.appendChild(t);
+    } else if(sec.type === 'order'){
+      q.innerHTML = `<div class="qtext"><span class="qnum">${globalNum}.</span> Sắp xếp thành câu đúng (câu kết thúc bằng dấu "${item.end}"):</div>`;
+      const ans = document.createElement('div'); ans.className='order-answer';
+      const pool = document.createElement('div'); pool.className='order-pool';
+      const shuffled = shuffle(item.words);
+      let cur = [];
+      function draw(){
+        pool.innerHTML=''; ans.innerHTML='';
+        const used = cur.slice();
+        shuffled.forEach(w => {
+          const k = used.indexOf(w);
+          if(k>-1){ used.splice(k,1); return; }
+          const c=document.createElement('span'); c.className='chip'; c.textContent=w;
+          c.addEventListener('click',()=>{ cur.push(w); state[sec.key][i]=cur.join(' '); updateProgress(); draw(); });
+          pool.appendChild(c);
+        });
+        cur.forEach((w,idx)=>{
+          const c=document.createElement('span'); c.className='chip'; c.textContent=w; c.title='Bấm để bỏ từ này';
+          c.addEventListener('click',()=>{ cur.splice(idx,1); state[sec.key][i]=cur.length?cur.join(' '):null; updateProgress(); draw(); });
+          ans.appendChild(c);
+        });
+      }
+      draw();
+      q.appendChild(ans); q.appendChild(pool);
+    }
+    q.appendChild(fb);
+    box.appendChild(q);
+  });
+});
+
+// ---------- CHECK ----------
+function setFb(fb, ok, shown, why){
+  fb.className = 'feedback show ' + (ok ? 'good' : 'bad');
+  fb.innerHTML = '';
+  const head = document.createElement('b');
+  head.textContent = ok ? '✓ Chính xác!' : `✗ Chưa đúng. Đáp án: ${shown}`;
+  fb.appendChild(head);
+  if(why){ const w=document.createElement('span'); w.className='why'; w.textContent='💡 '+why; fb.appendChild(w); }
+}
+function checkSection(sec){
+  let c = 0;
+  const qs = document.querySelectorAll(`#${sec.key}-questions .q`);
+  sec.items.forEach((item,i) => {
+    const fb = document.getElementById(`${sec.key}-fb-${i}`);
+    const val = state[sec.key][i];
+    let ok = false, shown = '';
+    if(sec.type==='mc'){
+      ok = val === item.answer; shown = item.answer;
+      qs[i].querySelectorAll('.mc-btn').forEach(b=>{
+        b.classList.remove('correct','incorrect');
+        if(b.textContent===item.answer) b.classList.add('correct');
+        else if(b.textContent===val) b.classList.add('incorrect');
+      });
+    } else if(sec.type==='fill'){
+      ok = item.answers.some(a => norm(a) === norm(val)); shown = item.answers[0];
+      const inp = qs[i].querySelector('.blank');
+      inp.style.borderBottomColor = ok ? 'var(--good)' : 'var(--bad)';
+    } else {
+      ok = item.answers.some(a => norm(a) === norm(val)); shown = item.answers[0] + item.end;
+    }
+    if(ok) c++;
+    setFb(fb, ok, shown, item.why);
+  });
+  return c;
+}
+
+// ---------- SEND RESULT ----------
+function sendResult(payload){
+  const st = document.getElementById('send-status');
+  const btn = document.getElementById('check-all-btn');
+  st.textContent = 'Đang gửi kết quả...'; st.className='pending'; btn.disabled = true;
+  fetch(SCRIPT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload)})
+    .then(()=>{ st.textContent='Đã gửi kết quả về hệ thống.'; st.className='ok'; })
+    .catch(err=>{ st.textContent='Gửi kết quả thất bại (kiểm tra kết nối mạng): '+err.message; st.className='err'; })
+    .finally(()=>{ btn.disabled=false; });
+}
+
+document.getElementById('check-all-btn').addEventListener('click', () => {
+  const nameEl=document.getElementById('stuName'), classEl=document.getElementById('stuClass'), schoolEl=document.getElementById('stuSchool');
+  nameEl.classList.remove('required-missing'); classEl.classList.remove('required-missing');
+  const name=nameEl.value.trim(), stuClass=classEl.value.trim(), school=schoolEl.value.trim();
+  let missing=false;
+  if(!name){ nameEl.classList.add('required-missing'); missing=true; }
+  if(!stuClass){ classEl.classList.add('required-missing'); missing=true; }
+  if(missing){
+    alert('Vui lòng điền Họ và tên và Lớp trước khi nộp bài.');
+    (name ? classEl : nameEl).focus();
+    window.scrollTo({top:0,behavior:'smooth'});
+    return;
+  }
+  const unanswered = TOTAL - totalAnswered();
+  if(unanswered > 0 && !confirm(`Bạn còn ${unanswered} câu chưa làm. Vẫn nộp bài?`)) return;
+
+  // per-level tally
+  const levels = {L1:[0,0,'var(--l1)'],L2:[0,0,'var(--l2)'],L3:[0,0,'var(--l3)'],L4:[0,0,'var(--l4)'],L5:[0,0,'var(--l5)']};
+  let total = 0;
+  SECTIONS.forEach(sec=>{
+    const c = checkSection(sec); total += c;
+    const L = 'L' + sec.key.charAt(1);
+    levels[L][0] += c; levels[L][1] += sec.items.length;
+  });
+  const score10 = (total/TOTAL*10).toFixed(1);
+  document.getElementById('score-panel').classList.add('show');
+  document.getElementById('score-big').textContent = `${total}/${TOTAL}`;
+  document.getElementById('score-ten').textContent = `Điểm: ${score10}/10`;
+  const pct = total/TOTAL;
+  document.getElementById('score-msg').textContent =
+    pct===1 ? 'Xuất sắc! Bạn đã nắm vững thì quá khứ đơn.' :
+    pct>=0.8 ? 'Rất tốt! Xem lại vài câu sai để hoàn thiện hơn.' :
+    pct>=0.5 ? 'Khá ổn — xem level nào còn yếu bên dưới và ôn lại phần đó.' :
+    'Đừng nản! Đọc lại phần lý thuyết ở đầu trang rồi làm lại nhé.';
+  const bd = document.getElementById('level-breakdown'); bd.innerHTML='';
+  Object.entries(levels).forEach(([k,[c,n,col]])=>{
+    const s=document.createElement('span'); s.style.background=col; s.textContent=`${k}: ${c}/${n}`; bd.appendChild(s);
+  });
+  document.getElementById('score-panel').scrollIntoView({behavior:'smooth',block:'center'});
+  sendResult({
+    className: CLASS_LABEL, testName: TEST_NAME, school: school, studentClass: stuClass, name: name,
+    correct: total, total: TOTAL, score10: score10, timestamp: new Date().toISOString()
+  });
+});
+document.getElementById('reset-btn').addEventListener('click', ()=>{ if(confirm('Xóa hết bài làm và làm lại?')) location.reload(); });
+
+// ---------- TEACHER ANSWER KEY ----------
+document.getElementById('key-btn').addEventListener('click', ()=>{
+  const box = document.getElementById('answer-key');
+  if(box.style.display==='block'){ box.style.display='none'; return; }
+  const code = prompt('Nhập mã giáo viên:');
+  if(code !== TEACHER_CODE) return;
+  let html = '<h3 style="margin-top:0">Đáp án</h3>';
+  SECTIONS.forEach(sec=>{
+    html += `<h4>${sec.tag}</h4><ol start="${sec.items[0]._num}">`;
+    sec.items.forEach(it=>{
+      const a = sec.type==='mc' ? it.answer : (sec.type==='order' ? it.answers[0]+it.end : it.answers.join(' / '));
+      html += `<li>${a.replace(/</g,'&lt;')}</li>`;
+    });
+    html += '</ol>';
+  });
+  box.innerHTML = html; box.style.display='block';
+});
+updateProgress();
+</script>
+</body>
+</html>
