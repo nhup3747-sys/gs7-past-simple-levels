@@ -72,6 +72,13 @@
     font-size:0.9rem;cursor:pointer;user-select:none;}
   .chip:hover{border-color:var(--brand);}
   .order-answer .chip{background:#eef1ff;border-color:var(--brand);}
+  .spot-line{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:1rem;margin-top:4px;}
+  .spot-w{border:1.5px dashed #c9cfdd;background:#fff;color:var(--ink);padding:5px 9px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:0.98rem;}
+  .spot-w:hover{border-color:var(--brand);border-style:solid;}
+  .spot-w.selected{border:1.5px solid var(--brand);background:#eef1ff;font-weight:700;}
+  .spot-w.correct{border:1.5px solid var(--good);background:var(--good-bg);color:var(--good);font-weight:700;}
+  .spot-w.incorrect{border:1.5px solid var(--bad);background:var(--bad-bg);color:var(--bad);font-weight:700;}
+  .spot-p{color:var(--sub);}
   .feedback{margin-top:8px;font-size:0.88rem;padding:8px 12px;border-radius:8px;display:none;}
   .feedback.show{display:block;}
   .feedback.good{background:var(--good-bg);color:var(--good);}
@@ -191,20 +198,20 @@ const TEACHER_CODE = "gs7gv";
 // ---------- DATA ----------
 const SECTIONS = [
   {
-    key:"l1", color:"var(--l1)", tag:"Level 1 · Nhận biết", title:"Nhận biết dấu hiệu thì quá khứ đơn", type:"mc",
-    desc:"Chọn đáp án đúng. Hãy tìm dấu hiệu thời gian trong câu.",
-    tip:"Mẹo: thấy <b>yesterday, last…, …ago, in + năm đã qua</b> → dùng quá khứ đơn.",
+    key:"l1", color:"var(--l1)", tag:"Level 1 · Nhận biết", title:"Tìm dấu hiệu thì quá khứ đơn trong câu", type:"spot",
+    desc:"Đọc câu hoàn chỉnh. Bấm vào từ / cụm từ là DẤU HIỆU cho biết câu dùng thì quá khứ đơn.",
+    tip:"Dấu hiệu: <b>yesterday · last + thời gian · khoảng thời gian + ago · in + năm đã qua</b>. Cẩn thận: <i>usually, often, every…</i> là dấu hiệu hiện tại đơn — đừng chọn nhầm!",
     items:[
-      {prompt:"We cleaned the school yard ___.", options:["every day","last Sunday","tomorrow","now"], answer:"last Sunday", why:"\"cleaned\" là quá khứ → đi với \"last Sunday\"."},
-      {prompt:"My class visited the nursing home two days ___.", options:["ago","last","yesterday","before"], answer:"ago", why:"Khoảng thời gian + ago: two days ago (2 ngày trước)."},
-      {prompt:"Từ nào là dấu hiệu của thì quá khứ đơn?", options:["next week","yesterday","at the moment","every morning"], answer:"yesterday", why:"yesterday = hôm qua → quá khứ đơn."},
-      {prompt:"They planted trees ___ 2020.", options:["in","at","on","last"], answer:"in", why:"in + năm đã qua (in 2020)."},
-      {prompt:"Câu nào dùng thì quá khứ đơn?", long:true, options:["She often helps old people.","She helped old people last week.","She is helping old people now.","She will help old people."], answer:"She helped old people last week.", why:"Có \"last week\" và động từ \"helped\" (V-ed)."},
-      {prompt:"Tom ___ to teach English last summer.", options:["volunteers","volunteered","is volunteering","will volunteer"], answer:"volunteered", why:"last summer → quá khứ đơn: volunteered."},
-      {prompt:"Từ nào KHÔNG phải dấu hiệu của thì quá khứ đơn?", options:["last month","three days ago","usually","in 2019"], answer:"usually", why:"usually (thường xuyên) là dấu hiệu thì hiện tại đơn."},
-      {prompt:"___ week, we collected old clothes for poor children.", options:["Next","Last","Every","This"], answer:"Last", why:"\"collected\" là quá khứ → Last week."},
-      {prompt:"I ___ my grandparents last weekend.", options:["visit","visits","visited","visiting"], answer:"visited", why:"last weekend → V-ed: visited."},
-      {prompt:"Mai ___ a postcard yesterday.", options:["makes","made","make","is making"], answer:"made", why:"yesterday → quá khứ; make → made (bất quy tắc)."}
+      {chunks:["We","cleaned","the school yard","last Sunday","."], answer:"last Sunday", why:"last + thời gian (last Sunday = Chủ nhật tuần trước)."},
+      {chunks:["My class","visited","the nursing home","two days ago","."], answer:"two days ago", why:"Khoảng thời gian + ago (two days ago = 2 ngày trước)."},
+      {chunks:["Yesterday",",","Mai","made","a postcard","for her grandma","."], answer:"Yesterday", why:"yesterday = hôm qua."},
+      {chunks:["They","planted","trees","in the park","in 2020","."], answer:"in 2020", why:"in + năm đã qua. Lưu ý: \"in the park\" chỉ nơi chốn, không phải dấu hiệu."},
+      {chunks:["Tom","taught","English","to young children","last summer","."], answer:"last summer", why:"last summer = mùa hè năm ngoái."},
+      {chunks:["I","usually","walk","to school",",","but","yesterday","I","went","by bus","."], answer:"yesterday", why:"yesterday → quá khứ (went). \"usually\" là dấu hiệu hiện tại đơn (walk)."},
+      {chunks:["Three weeks ago",",","we","collected","old books","for poor children","."], answer:"Three weeks ago", why:"Three weeks ago = 3 tuần trước."},
+      {chunks:["She","often","helps","her mum",",","but","last night","she","didn't","help","her","."], answer:"last night", why:"last night → quá khứ (didn't help). \"often\" là dấu hiệu hiện tại đơn."},
+      {chunks:["The volunteers","sent","food","to flooded areas","last month","."], answer:"last month", why:"last month = tháng trước."},
+      {chunks:["Did","you","join","the clean-up activity","yesterday morning","?"], answer:"yesterday morning", why:"yesterday morning = sáng hôm qua (câu hỏi với Did)."}
     ]
   },
   {
@@ -345,6 +352,16 @@ SECTIONS.forEach(sec => {
         wrap.appendChild(b);
       });
       q.appendChild(wrap);
+    } else if(sec.type === 'spot'){
+      q.innerHTML = `<div class="qtext"><span class="qnum">${globalNum}.</span> Bấm vào dấu hiệu thì quá khứ đơn:</div>`;
+      const line = document.createElement('div'); line.className='spot-line';
+      item.chunks.forEach(ch => {
+        if(/^[.,?!]$/.test(ch)){ const p=document.createElement('span'); p.className='spot-p'; p.textContent=ch; line.appendChild(p); return; }
+        const b=document.createElement('button'); b.type='button'; b.className='spot-w'; b.textContent=ch;
+        b.addEventListener('click',()=>{ line.querySelectorAll('.spot-w').forEach(x=>x.classList.remove('selected')); b.classList.add('selected'); state[sec.key][i]=ch; updateProgress(); });
+        line.appendChild(b);
+      });
+      q.appendChild(line);
     } else if(sec.type === 'fill'){
       const t = document.createElement('div');
       t.className='qtext';
@@ -406,6 +423,13 @@ function checkSection(sec){
     if(sec.type==='mc'){
       ok = val === item.answer; shown = item.answer;
       qs[i].querySelectorAll('.mc-btn').forEach(b=>{
+        b.classList.remove('correct','incorrect');
+        if(b.textContent===item.answer) b.classList.add('correct');
+        else if(b.textContent===val) b.classList.add('incorrect');
+      });
+    } else if(sec.type==='spot'){
+      ok = val === item.answer; shown = '"' + item.answer + '"';
+      qs[i].querySelectorAll('.spot-w').forEach(b=>{
         b.classList.remove('correct','incorrect');
         if(b.textContent===item.answer) b.classList.add('correct');
         else if(b.textContent===val) b.classList.add('incorrect');
@@ -490,7 +514,7 @@ document.getElementById('key-btn').addEventListener('click', ()=>{
   SECTIONS.forEach(sec=>{
     html += `<h4>${sec.tag}</h4><ol start="${sec.items[0]._num}">`;
     sec.items.forEach(it=>{
-      const a = sec.type==='mc' ? it.answer : (sec.type==='order' ? it.answers[0]+it.end : it.answers.join(' / '));
+      const a = (sec.type==='mc'||sec.type==='spot') ? it.answer : (sec.type==='order' ? it.answers[0]+it.end : it.answers.join(' / '));
       html += `<li>${a.replace(/</g,'&lt;')}</li>`;
     });
     html += '</ol>';
